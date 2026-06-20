@@ -258,7 +258,7 @@ export default function DonatePage() {
       </section>
 
       <div className="mt-12">
-        <AdSlot slot="6666666666" format="rectangle" className="h-64" />
+        <AdSlot slot="1138897822" format="rectangle" className="h-64" />
       </div>
 
       {/* Final CTA */}

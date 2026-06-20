@@ -51,7 +51,7 @@ export default function AboutPage() {
       </div>
 
       <div className="mt-12">
-        <AdSlot slot="3456789012" format="rectangle" className="h-64" />
+        <AdSlot slot="1138897822" format="rectangle" className="h-64" />
       </div>
     </div>
   );

@@ -280,7 +280,7 @@ export default function MergePage() {
         </div>
 
         <aside className="space-y-4">
-          <AdSlot slot="7890123456" format="rectangle" className="h-64" />
+          <AdSlot slot="1138897822" format="rectangle" className="h-64" />
         </aside>
       </div>
       <DonatePrompt trigger={successCount} />

@@ -134,8 +134,8 @@ export default function ConvertPage() {
         </div>
 
         <aside className="space-y-4">
-          <AdSlot slot="5678901234" format="rectangle" className="h-64" />
-          <AdSlot slot="6789012345" format="vertical" className="h-64" />
+          <AdSlot slot="1138897822" format="rectangle" className="h-64" />
+          <AdSlot slot="1138897822" format="vertical" className="h-64" />
         </aside>
       </div>
     </div>

@@ -158,7 +158,7 @@ export default function SplitPage() {
           )}
         </div>
 
-        <aside><AdSlot slot="0123456789" format="rectangle" className="h-64" /></aside>
+        <aside><AdSlot slot="1138897822" format="rectangle" className="h-64" /></aside>
       </div>
     </div>
   );

@@ -102,7 +102,7 @@ export default function RotatePage() {
           )}
         </div>
 
-        <aside><AdSlot slot="1111111111" format="rectangle" className="h-64" /></aside>
+        <aside><AdSlot slot="1138897822" format="rectangle" className="h-64" /></aside>
       </div>
     </div>
   );

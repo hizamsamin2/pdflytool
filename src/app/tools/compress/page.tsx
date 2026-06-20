@@ -118,7 +118,7 @@ export default function CompressPage() {
         </div>
 
         <aside className="space-y-4">
-          <AdSlot slot="9012345678" format="rectangle" className="h-64" />
+          <AdSlot slot="1138897822" format="rectangle" className="h-64" />
         </aside>
       </div>
     </div>

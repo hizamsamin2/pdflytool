@@ -43,7 +43,7 @@ export default function HomePage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-8">
-        <AdSlot slot="1234567890" format="horizontal" className="h-24" />
+        <AdSlot slot="1138897822" format="horizontal" className="h-24" />
       </section>
 
       <section id="tools" className="mx-auto max-w-6xl px-4 py-12">
@@ -93,7 +93,7 @@ export default function HomePage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-12">
-        <AdSlot slot="2345678901" format="rectangle" className="h-64" />
+        <AdSlot slot="1138897822" format="rectangle" className="h-64" />
       </section>
 
       <section className="mx-auto max-w-4xl px-4 py-12">

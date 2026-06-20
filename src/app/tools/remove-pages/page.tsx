@@ -95,7 +95,7 @@ export default function RemovePagesPage() {
           )}
         </div>
 
-        <aside><AdSlot slot="2222222222" format="rectangle" className="h-64" /></aside>
+        <aside><AdSlot slot="1138897822" format="rectangle" className="h-64" /></aside>
       </div>
     </div>
   );

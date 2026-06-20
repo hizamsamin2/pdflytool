@@ -65,7 +65,7 @@ export default function PricingPage() {
       </section>
 
       <div className="mt-12">
-        <AdSlot slot="4567890123" format="rectangle" className="h-64" />
+        <AdSlot slot="1138897822" format="rectangle" className="h-64" />
       </div>
 
       <section className="mt-12 max-w-2xl mx-auto">
