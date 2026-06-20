@@ -244,7 +244,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .flipbook-controls button { width: 36px; height: 36px; border: none; background: rgba(255,255,255,0.1); color: #fff; border-radius: 6px; cursor: pointer; font-size: 18px; transition: background 0.2s; }
 .flipbook-controls button:hover { background: rgba(255,255,255,0.2); }
 #page-indicator { min-width: 60px; text-align: center; font-variant-numeric: tabular-nums; font-size: 14px; }
-#flipbook-container { flex: 1; position: relative; background: #1a1a1a; }
+#flipbook-container { flex: 1; position: relative; background: #1a1a1a; overflow: auto; display: flex; align-items: flex-start; justify-content: center; padding: 20px; }
 .page-flip-container { position: relative; width: 100%; height: 100%; }
 .stf__block { background: #fff !important; }
 .search-overlay { position: fixed; top: 60px; right: 16px; width: 320px; max-height: 70vh; background: rgba(20,20,20,0.95); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 12px; z-index: 20; display: flex; flex-direction: column; }
@@ -290,31 +290,7 @@ function initFlipbook(pagesData, outline) {
     baseWidth = Math.min(800, window.innerWidth - 40);
     baseHeight = baseWidth * baseRatio;
 
-    pageFlip = new St.PageFlip(container, {
-      width: baseWidth,
-      height: baseHeight,
-      size: 'stretch',
-      minWidth: 280,
-      maxWidth: 1200,
-      minHeight: Math.floor(280 * baseRatio),
-      maxHeight: Math.floor(1200 * baseRatio),
-      showCover: false,
-      mobileScrollSupport: true,
-      flippingTime: 600,
-      usePortrait: true,
-      startZIndex: 0,
-      autoSize: true,
-      maxShadowOpacity: 0.5,
-      drawShadow: true,
-      useMouseEvents: true
-    });
-
-    pageFlip.loadFromImages(pages.map(p => p.imageDataUrl));
-
-    pageFlip.on('flip', (e) => {
-      currentPage = e.data + 1;
-      updateIndicator();
-    });
+    createFlipbook();
 
     setupControls();
     setupSearch(outline);
@@ -323,30 +299,53 @@ function initFlipbook(pagesData, outline) {
     updateZoomLabel();
 
     window.addEventListener('resize', () => {
+      baseWidth = Math.min(1200, window.innerWidth - 40);
+      baseHeight = baseWidth * baseRatio;
       if (pageFlip) {
-        baseWidth = Math.min(1200, window.innerWidth - 40);
-        pageFlip.update();
+        try { pageFlip.destroy(); } catch(e) {}
+        pageFlip = null;
+        createFlipbook();
       }
     });
   };
   firstImg.src = pagesData[0].imageDataUrl;
 }
 
-function updateIndicator() {
-  document.getElementById('page-indicator').textContent = currentPage + ' / ' + pages.length;
+function createFlipbook() {
+  const container = document.getElementById('flipbook-container');
+  container.innerHTML = '';
+  const w = baseWidth * zoomLevel;
+  const h = baseHeight * zoomLevel;
+
+  pageFlip = new St.PageFlip(container, {
+    width: w,
+    height: h,
+    size: 'fixed',
+    minWidth: w,
+    maxWidth: w,
+    minHeight: h,
+    maxHeight: h,
+    showCover: false,
+    mobileScrollSupport: true,
+    flippingTime: 600,
+    usePortrait: true,
+    startZIndex: 0,
+    autoSize: false,
+    maxShadowOpacity: 0.5,
+    drawShadow: true,
+    useMouseEvents: true
+  });
+
+  pageFlip.loadFromImages(pages.map(p => p.imageDataUrl));
+
+  pageFlip.on('flip', (e) => {
+    currentPage = e.data + 1;
+    updateIndicator();
+  });
 }
 
-function applyZoom() {
-  if (!pageFlip) return;
-  const settings = pageFlip.getSettings();
-  settings.width = baseWidth * zoomLevel;
-  settings.height = baseHeight * zoomLevel;
-  settings.minWidth = Math.max(50, 280 * zoomLevel);
-  settings.maxWidth = 2400 * zoomLevel;
-  settings.minHeight = Math.max(50, Math.floor(280 * baseRatio * zoomLevel));
-  settings.maxHeight = Math.floor(2400 * baseRatio * zoomLevel);
-  pageFlip.update();
-  updateZoomLabel();
+function updateIndicator() {
+  document.getElementById('page-indicator').textContent = currentPage + ' / ' + pages.length;
 }
 
 function updateZoomLabel() {
@@ -355,8 +354,8 @@ function updateZoomLabel() {
 }
 
 function setupControls() {
-  document.getElementById('prev-btn').onclick = () => pageFlip.flipPrev();
-  document.getElementById('next-btn').onclick = () => pageFlip.flipNext();
+  document.getElementById('prev-btn').onclick = () => pageFlip && pageFlip.flipPrev();
+  document.getElementById('next-btn').onclick = () => pageFlip && pageFlip.flipNext();
   const fsBtn = document.getElementById('header-fullscreen-btn');
   if (fsBtn) {
     fsBtn.onclick = () => {
@@ -368,16 +367,31 @@ function setupControls() {
 
 function setupZoom() {
   document.getElementById('zoom-out-btn').onclick = () => {
-    zoomLevel = Math.max(ZOOM_MIN, zoomLevel - ZOOM_STEP);
-    applyZoom();
+    zoomLevel = Math.max(ZOOM_MIN, +(zoomLevel - ZOOM_STEP).toFixed(2));
+    if (pageFlip) {
+      try { pageFlip.destroy(); } catch(e) {}
+      pageFlip = null;
+      createFlipbook();
+    }
+    updateZoomLabel();
   };
   document.getElementById('zoom-in-btn').onclick = () => {
-    zoomLevel = Math.min(ZOOM_MAX, zoomLevel + ZOOM_STEP);
-    applyZoom();
+    zoomLevel = Math.min(ZOOM_MAX, +(zoomLevel + ZOOM_STEP).toFixed(2));
+    if (pageFlip) {
+      try { pageFlip.destroy(); } catch(e) {}
+      pageFlip = null;
+      createFlipbook();
+    }
+    updateZoomLabel();
   };
   document.getElementById('zoom-reset-btn').onclick = () => {
     zoomLevel = 1;
-    applyZoom();
+    if (pageFlip) {
+      try { pageFlip.destroy(); } catch(e) {}
+      pageFlip = null;
+      createFlipbook();
+    }
+    updateZoomLabel();
   };
   const fsBtn = document.getElementById('fullscreen-btn');
   if (fsBtn) {
@@ -391,24 +405,27 @@ function setupZoom() {
 function setupKeyboard() {
   document.addEventListener('keydown', (e) => {
     if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
-    if (e.key === 'ArrowLeft') pageFlip.flipPrev();
-    else if (e.key === 'ArrowRight') pageFlip.flipNext();
+    if (e.key === 'ArrowLeft' && pageFlip) pageFlip.flipPrev();
+    else if (e.key === 'ArrowRight' && pageFlip) pageFlip.flipNext();
     else if (e.key.toLowerCase() === 's') toggleSearch();
     else if (e.key.toLowerCase() === 'f') {
       if (document.fullscreenElement) document.exitFullscreen();
       else document.documentElement.requestFullscreen();
     }
     else if (e.key === '+' || e.key === '=') {
-      zoomLevel = Math.min(ZOOM_MAX, zoomLevel + ZOOM_STEP);
-      applyZoom();
+      zoomLevel = Math.min(ZOOM_MAX, +(zoomLevel + ZOOM_STEP).toFixed(2));
+      if (pageFlip) { try { pageFlip.destroy(); } catch(e) {} pageFlip = null; createFlipbook(); }
+      updateZoomLabel();
     }
     else if (e.key === '-' || e.key === '_') {
-      zoomLevel = Math.max(ZOOM_MIN, zoomLevel - ZOOM_STEP);
-      applyZoom();
+      zoomLevel = Math.max(ZOOM_MIN, +(zoomLevel - ZOOM_STEP).toFixed(2));
+      if (pageFlip) { try { pageFlip.destroy(); } catch(e) {} pageFlip = null; createFlipbook(); }
+      updateZoomLabel();
     }
     else if (e.key === '0') {
       zoomLevel = 1;
-      applyZoom();
+      if (pageFlip) { try { pageFlip.destroy(); } catch(e) {} pageFlip = null; createFlipbook(); }
+      updateZoomLabel();
     }
   });
 }
