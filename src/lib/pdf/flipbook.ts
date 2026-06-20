@@ -194,7 +194,7 @@ export async function buildStandaloneHtml(flipbook: Flipbook, title: string): Pr
       <button id="prev-btn" title="Previous (←)">‹</button>
       <span id="page-indicator">1 / ${flipbook.pageCount}</span>
       <button id="next-btn" title="Next (→)">›</button>
-      <button id="zoom-btn" title="Zoom (Z)">⛶</button>
+      <button id="header-fullscreen-btn" title="Fullscreen (F)">⛶</button>
     </div>
   </header>
   <main id="flipbook-container"></main>
@@ -202,6 +202,12 @@ export async function buildStandaloneHtml(flipbook: Flipbook, title: string): Pr
     <input id="search-input" type="search" placeholder="Search in book..." />
     <div id="search-results"></div>
     <button id="search-close">✕</button>
+  </div>
+  <div class="zoom-controls">
+    <button id="zoom-out-btn" title="Zoom out (-)">−</button>
+    <button id="zoom-reset-btn" title="Reset zoom (0)">100%</button>
+    <button id="zoom-in-btn" title="Zoom in (+)">+</button>
+    <button id="fullscreen-btn" title="Fullscreen (F)">⛶</button>
   </div>
   <button id="search-btn" class="floating-btn" title="Search (S)">🔍</button>
 </div>
@@ -254,6 +260,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 #search-close { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; background: transparent; border: none; color: #888; cursor: pointer; font-size: 16px; }
 .floating-btn { position: fixed; bottom: 16px; right: 16px; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); color: #fff; cursor: pointer; font-size: 18px; backdrop-filter: blur(10px); z-index: 10; }
 .floating-btn:hover { background: rgba(255,255,255,0.25); }
+.zoom-controls { position: fixed; bottom: 16px; left: 16px; display: flex; gap: 4px; background: rgba(20,20,20,0.85); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 4px; backdrop-filter: blur(10px); z-index: 10; }
+.zoom-controls button { min-width: 36px; height: 36px; padding: 0 10px; border: none; background: transparent; color: #fff; border-radius: 6px; cursor: pointer; font-size: 16px; transition: background 0.2s; }
+.zoom-controls button:hover { background: rgba(255,255,255,0.12); }
+#zoom-reset-btn { font-size: 12px; font-variant-numeric: tabular-nums; }
 @media (max-width: 640px) { .flipbook-header h1 { display: none; } .search-overlay { left: 16px; right: 16px; width: auto; } }
 `;
 
@@ -261,25 +271,33 @@ const STANDALONE_JS = `
 let pageFlip = null;
 let pages = [];
 let currentPage = 1;
+let zoomLevel = 1;
+let baseWidth = 0;
+let baseHeight = 0;
+let baseRatio = 0;
+
+const ZOOM_MIN = 0.5;
+const ZOOM_MAX = 3;
+const ZOOM_STEP = 0.25;
 
 function initFlipbook(pagesData, outline) {
   pages = pagesData;
   const container = document.getElementById('flipbook-container');
-  
+
   const firstImg = new Image();
   firstImg.onload = function() {
-    const ratio = firstImg.naturalHeight / firstImg.naturalWidth;
-    const targetWidth = Math.min(800, window.innerWidth - 40);
-    const targetHeight = targetWidth * ratio;
-    
+    baseRatio = firstImg.naturalHeight / firstImg.naturalWidth;
+    baseWidth = Math.min(800, window.innerWidth - 40);
+    baseHeight = baseWidth * baseRatio;
+
     pageFlip = new St.PageFlip(container, {
-      width: targetWidth,
-      height: targetHeight,
+      width: baseWidth,
+      height: baseHeight,
       size: 'stretch',
       minWidth: 280,
       maxWidth: 1200,
-      minHeight: Math.floor(280 * ratio),
-      maxHeight: Math.floor(1200 * ratio),
+      minHeight: Math.floor(280 * baseRatio),
+      maxHeight: Math.floor(1200 * baseRatio),
       showCover: false,
       mobileScrollSupport: true,
       flippingTime: 600,
@@ -290,20 +308,25 @@ function initFlipbook(pagesData, outline) {
       drawShadow: true,
       useMouseEvents: true
     });
-    
+
     pageFlip.loadFromImages(pages.map(p => p.imageDataUrl));
-    
+
     pageFlip.on('flip', (e) => {
       currentPage = e.data + 1;
       updateIndicator();
     });
-    
+
     setupControls();
     setupSearch(outline);
     setupKeyboard();
-    
+    setupZoom();
+    updateZoomLabel();
+
     window.addEventListener('resize', () => {
-      if (pageFlip) pageFlip.update();
+      if (pageFlip) {
+        baseWidth = Math.min(1200, window.innerWidth - 40);
+        pageFlip.update();
+      }
     });
   };
   firstImg.src = pagesData[0].imageDataUrl;
@@ -313,13 +336,56 @@ function updateIndicator() {
   document.getElementById('page-indicator').textContent = currentPage + ' / ' + pages.length;
 }
 
+function applyZoom() {
+  if (!pageFlip) return;
+  const settings = pageFlip.getSettings();
+  settings.width = baseWidth * zoomLevel;
+  settings.height = baseHeight * zoomLevel;
+  settings.minWidth = Math.max(50, 280 * zoomLevel);
+  settings.maxWidth = 2400 * zoomLevel;
+  settings.minHeight = Math.max(50, Math.floor(280 * baseRatio * zoomLevel));
+  settings.maxHeight = Math.floor(2400 * baseRatio * zoomLevel);
+  pageFlip.update();
+  updateZoomLabel();
+}
+
+function updateZoomLabel() {
+  const btn = document.getElementById('zoom-reset-btn');
+  if (btn) btn.textContent = Math.round(zoomLevel * 100) + '%';
+}
+
 function setupControls() {
   document.getElementById('prev-btn').onclick = () => pageFlip.flipPrev();
   document.getElementById('next-btn').onclick = () => pageFlip.flipNext();
-  document.getElementById('zoom-btn').onclick = () => {
-    if (document.fullscreenElement) document.exitFullscreen();
-    else document.documentElement.requestFullscreen();
+  const fsBtn = document.getElementById('header-fullscreen-btn');
+  if (fsBtn) {
+    fsBtn.onclick = () => {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen();
+    };
+  }
+}
+
+function setupZoom() {
+  document.getElementById('zoom-out-btn').onclick = () => {
+    zoomLevel = Math.max(ZOOM_MIN, zoomLevel - ZOOM_STEP);
+    applyZoom();
   };
+  document.getElementById('zoom-in-btn').onclick = () => {
+    zoomLevel = Math.min(ZOOM_MAX, zoomLevel + ZOOM_STEP);
+    applyZoom();
+  };
+  document.getElementById('zoom-reset-btn').onclick = () => {
+    zoomLevel = 1;
+    applyZoom();
+  };
+  const fsBtn = document.getElementById('fullscreen-btn');
+  if (fsBtn) {
+    fsBtn.onclick = () => {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen();
+    };
+  }
 }
 
 function setupKeyboard() {
@@ -328,7 +394,22 @@ function setupKeyboard() {
     if (e.key === 'ArrowLeft') pageFlip.flipPrev();
     else if (e.key === 'ArrowRight') pageFlip.flipNext();
     else if (e.key.toLowerCase() === 's') toggleSearch();
-    else if (e.key.toLowerCase() === 'z') document.getElementById('zoom-btn').click();
+    else if (e.key.toLowerCase() === 'f') {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen();
+    }
+    else if (e.key === '+' || e.key === '=') {
+      zoomLevel = Math.min(ZOOM_MAX, zoomLevel + ZOOM_STEP);
+      applyZoom();
+    }
+    else if (e.key === '-' || e.key === '_') {
+      zoomLevel = Math.max(ZOOM_MIN, zoomLevel - ZOOM_STEP);
+      applyZoom();
+    }
+    else if (e.key === '0') {
+      zoomLevel = 1;
+      applyZoom();
+    }
   });
 }
 
