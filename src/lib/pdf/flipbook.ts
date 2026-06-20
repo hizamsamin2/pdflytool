@@ -314,8 +314,10 @@ function initFlipbook(pagesData, outline) {
 function createFlipbook() {
   const container = document.getElementById('flipbook-container');
   container.innerHTML = '';
-  const w = baseWidth * zoomLevel;
-  const h = baseHeight * zoomLevel;
+  const w = baseWidth;
+  const h = baseHeight;
+  container.style.setProperty('--flip-w', w + 'px');
+  container.style.setProperty('--flip-h', h + 'px');
 
   pageFlip = new St.PageFlip(container, {
     width: w,
@@ -342,6 +344,20 @@ function createFlipbook() {
     currentPage = e.data + 1;
     updateIndicator();
   });
+
+  applyZoom();
+}
+
+function applyZoom() {
+  const container = document.getElementById('flipbook-container');
+  if (!container) return;
+  const inner = container.querySelector('.stf__wrapper');
+  if (!inner) return;
+  inner.style.transform = 'scale(' + zoomLevel + ')';
+  inner.style.transformOrigin = 'top center';
+  inner.style.width = '100%';
+  inner.style.minHeight = (baseHeight * zoomLevel) + 'px';
+  updateZoomLabel();
 }
 
 function updateIndicator() {
@@ -368,30 +384,15 @@ function setupControls() {
 function setupZoom() {
   document.getElementById('zoom-out-btn').onclick = () => {
     zoomLevel = Math.max(ZOOM_MIN, +(zoomLevel - ZOOM_STEP).toFixed(2));
-    if (pageFlip) {
-      try { pageFlip.destroy(); } catch(e) {}
-      pageFlip = null;
-      createFlipbook();
-    }
-    updateZoomLabel();
+    applyZoom();
   };
   document.getElementById('zoom-in-btn').onclick = () => {
     zoomLevel = Math.min(ZOOM_MAX, +(zoomLevel + ZOOM_STEP).toFixed(2));
-    if (pageFlip) {
-      try { pageFlip.destroy(); } catch(e) {}
-      pageFlip = null;
-      createFlipbook();
-    }
-    updateZoomLabel();
+    applyZoom();
   };
   document.getElementById('zoom-reset-btn').onclick = () => {
     zoomLevel = 1;
-    if (pageFlip) {
-      try { pageFlip.destroy(); } catch(e) {}
-      pageFlip = null;
-      createFlipbook();
-    }
-    updateZoomLabel();
+    applyZoom();
   };
   const fsBtn = document.getElementById('fullscreen-btn');
   if (fsBtn) {
@@ -414,18 +415,15 @@ function setupKeyboard() {
     }
     else if (e.key === '+' || e.key === '=') {
       zoomLevel = Math.min(ZOOM_MAX, +(zoomLevel + ZOOM_STEP).toFixed(2));
-      if (pageFlip) { try { pageFlip.destroy(); } catch(e) {} pageFlip = null; createFlipbook(); }
-      updateZoomLabel();
+      applyZoom();
     }
     else if (e.key === '-' || e.key === '_') {
       zoomLevel = Math.max(ZOOM_MIN, +(zoomLevel - ZOOM_STEP).toFixed(2));
-      if (pageFlip) { try { pageFlip.destroy(); } catch(e) {} pageFlip = null; createFlipbook(); }
-      updateZoomLabel();
+      applyZoom();
     }
     else if (e.key === '0') {
       zoomLevel = 1;
-      if (pageFlip) { try { pageFlip.destroy(); } catch(e) {} pageFlip = null; createFlipbook(); }
-      updateZoomLabel();
+      applyZoom();
     }
   });
 }
