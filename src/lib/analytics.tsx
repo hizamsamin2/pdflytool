@@ -36,8 +36,8 @@ export function GoogleAnalytics() {
 export const defaultMetadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
   title: {
-    default: "PDFly — Free PDF Tools Online",
-    template: "%s | PDFly",
+    default: "PDFlytool — Free PDF Tools Online",
+    template: "%s | PDFlytool",
   },
   description:
     "Free online PDF tools: merge, split, compress, convert, rotate, watermark. 100% private — files processed in your browser. No upload required.",
@@ -52,20 +52,20 @@ export const defaultMetadata: Metadata = {
     "watermark PDF",
     "online PDF",
     "free PDF tools",
-    "PDFly",
+    "PDFlytool",
   ],
-  authors: [{ name: "PDFly" }],
-  creator: "PDFly",
+  authors: [{ name: "PDFlytool" }],
+  creator: "PDFlytool",
   openGraph: {
     type: "website",
     locale: "en_US",
-    title: "PDFly — Free PDF Tools Online",
+    title: "PDFlytool — Free PDF Tools Online",
     description: "Free online PDF tools. Private, fast, and easy to use.",
-    siteName: "PDFly",
+    siteName: "PDFlytool",
   },
   twitter: {
     card: "summary_large_image",
-    title: "PDFly — Free PDF Tools",
+    title: "PDFlytool — Free PDF Tools",
     description: "Free online PDF tools. Private, fast, and easy to use.",
   },
   robots: { index: true, follow: true },

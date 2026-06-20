@@ -24,8 +24,8 @@ export function Header() {
     <header className="border-b sticky top-0 bg-background/95 backdrop-blur z-40">
       <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="PDFly" width={32} height={32} className="h-8 w-8" />
-          <span className="text-xl font-bold text-primary">PDFly</span>
+          <Image src="/logo.svg" alt="PDFlytool" width={32} height={32} className="h-8 w-8" />
+          <span className="text-xl font-bold text-primary">PDFlytool</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">

@@ -1,6 +1,6 @@
 export const metadata = {
   title: "Privacy Policy",
-  description: "How PDFly handles your data and privacy.",
+  description: "How PDFlytool handles your data and privacy.",
 };
 
 export default function PrivacyPage() {
@@ -11,7 +11,7 @@ export default function PrivacyPage() {
 
       <h2>1. Introduction</h2>
       <p>
-        PDFly (&ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;us&rdquo;) respects your privacy. This Privacy Policy explains how we collect, use, and protect your information when you visit our website.
+        PDFlytool (&ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;us&rdquo;) respects your privacy. This Privacy Policy explains how we collect, use, and protect your information when you visit our website.
       </p>
 
       <h2>2. Information We Collect</h2>

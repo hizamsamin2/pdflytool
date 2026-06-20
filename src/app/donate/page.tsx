@@ -4,8 +4,8 @@ import Link from "next/link";
 import { AdSlot } from "@/components/ad-slot";
 
 export const metadata = {
-  title: "Support PDFly — Keep PDF Tools Free",
-  description: "Help keep PDFly free for everyone. Your support funds development, hosting, and improvements.",
+  title: "Support PDFlytool — Keep PDF Tools Free",
+  description: "Help keep PDFlytool free for everyone. Your support funds development, hosting, and improvements.",
 };
 
 const donationMethods = [
@@ -84,9 +84,9 @@ export default function DonatePage() {
     <div className="mx-auto max-w-5xl px-4 py-12">
       <div className="text-center">
         <Heart className="h-12 w-12 text-pink-500 mx-auto mb-4" />
-        <h1 className="text-4xl md:text-5xl font-bold">Support PDFly</h1>
+        <h1 className="text-4xl md:text-5xl font-bold">Support PDFlytool</h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-          PDFly is <strong>free for everyone</strong> and always will be. If it saved you time, consider buying
+          PDFlytool is <strong>free for everyone</strong> and always will be. If it saved you time, consider buying
           us a coffee — your support keeps the servers running and funds new features.
         </p>
       </div>
@@ -223,10 +223,10 @@ export default function DonatePage() {
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-3">
           {[
             { icon: "⭐", title: "Star on GitHub", desc: "Show your appreciation with a star" },
-            { icon: "🐦", title: "Share on social media", desc: "Tell your friends about PDFly" },
+            { icon: "🐦", title: "Share on social media", desc: "Tell your friends about PDFlytool" },
             { icon: "✍️", title: "Write a review", desc: "On Product Hunt or your blog" },
             { icon: "🐛", title: "Report bugs", desc: "Help us improve by reporting issues" },
-            { icon: "🌐", title: "Translate", desc: "Help translate PDFly to your language" },
+            { icon: "🌐", title: "Translate", desc: "Help translate PDFlytool to your language" },
             { icon: "💡", title: "Suggest features", desc: "Tell us what tools you need next" },
           ].map((item) => (
             <div key={item.title} className="flex gap-3 p-3 rounded-lg border bg-card">
@@ -248,11 +248,11 @@ export default function DonatePage() {
             Our promise
           </h3>
           <p className="text-sm text-muted-foreground">
-            <strong>PDFly will always be free.</strong> No paywalls, no premium tiers, no "Pro" features locked behind subscriptions.
+            <strong>PDFlytool will always be free.</strong> No paywalls, no premium tiers, no "Pro" features locked behind subscriptions.
             Your donations go directly to hosting costs and development time — they don&apos;t unlock features.
           </p>
           <p className="text-sm text-muted-foreground">
-            If PDFly helped you, the best gift is sharing it with someone who needs it. ❤️
+            If PDFlytool helped you, the best gift is sharing it with someone who needs it. ❤️
           </p>
         </div>
       </section>
@@ -264,7 +264,7 @@ export default function DonatePage() {
       {/* Final CTA */}
       <section className="mt-12 text-center max-w-xl mx-auto">
         <p className="text-lg">
-          Even if you can&apos;t donate, thank you for using PDFly! 🙏
+          Even if you can&apos;t donate, thank you for using PDFlytool! 🙏
         </p>
         <Button asChild size="lg" variant="outline" className="mt-4">
           <Link href="/">← Back to Tools</Link>

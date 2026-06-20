@@ -38,7 +38,7 @@ export function DonatePrompt({ trigger }: { trigger?: number }) {
       <div className="flex items-start gap-3">
         <Heart className="h-6 w-6 text-pink-500 flex-shrink-0 mt-0.5 animate-pulse" />
         <div className="flex-1">
-          <p className="font-semibold text-sm">PDFly helped you? ☕</p>
+          <p className="font-semibold text-sm">PDFlytool helped you? ☕</p>
           <p className="text-xs text-muted-foreground mt-1">
             We&apos;re 100% free. If you found this useful, a small donation helps keep us running.
           </p>

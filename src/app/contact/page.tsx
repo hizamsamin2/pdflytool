@@ -2,7 +2,7 @@ import { Mail, MessageSquare } from "lucide-react";
 
 export const metadata = {
   title: "Contact",
-  description: "Get in touch with the PDFly team.",
+  description: "Get in touch with the PDFlytool team.",
 };
 
 export default function ContactPage() {
@@ -31,7 +31,7 @@ export default function ContactPage() {
         >
           <MessageSquare className="h-8 w-8 text-primary" />
           <h3 className="font-semibold mt-3">Feedback</h3>
-          <p className="text-sm text-muted-foreground mt-1">Help us improve PDFly</p>
+          <p className="text-sm text-muted-foreground mt-1">Help us improve PDFlytool</p>
           <p className="text-xs text-muted-foreground mt-2">Send your suggestions</p>
         </a>
       </div>

@@ -8,7 +8,7 @@ export function Footer() {
         {/* Support Banner */}
         <div className="mb-10 rounded-xl bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 p-6 text-center">
           <Heart className="h-8 w-8 text-pink-500 mx-auto mb-2" />
-          <h3 className="font-semibold text-lg">PDFly is free, forever</h3>
+          <h3 className="font-semibold text-lg">PDFlytool is free, forever</h3>
           <p className="text-sm text-muted-foreground mt-1 max-w-xl mx-auto">
             If our tools saved you time, consider supporting development with a small donation.
             Every coffee counts! ☕
@@ -18,7 +18,7 @@ export function Footer() {
             className="mt-4 inline-flex items-center gap-2 px-5 py-2 bg-pink-500 text-white rounded-full font-medium hover:bg-pink-600 transition"
           >
             <Heart className="h-4 w-4" />
-            Support PDFly
+            Support PDFlytool
           </Link>
         </div>
 
@@ -53,14 +53,14 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold mb-3">Why PDFly?</h3>
+            <h3 className="font-semibold mb-3">Why PDFlytool?</h3>
             <p className="text-sm text-muted-foreground">
               Free, private, and easy to use. All processing happens in your browser — your files never leave your device.
             </p>
           </div>
         </div>
         <div className="mt-8 pt-8 border-t text-sm text-muted-foreground text-center">
-          © {new Date().getFullYear()} PDFly. Made with ❤️ for everyone who needs free PDF tools.
+          © {new Date().getFullYear()} PDFlytool. Made with ❤️ for everyone who needs free PDF tools.
         </div>
       </div>
     </footer>

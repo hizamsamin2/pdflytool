@@ -99,9 +99,9 @@ export default function HomePage() {
       <section className="mx-auto max-w-4xl px-4 py-12">
         <div className="rounded-2xl bg-gradient-to-br from-pink-50 via-pink-100 to-orange-50 border border-pink-200 p-8 md:p-12 text-center">
           <Heart className="h-10 w-10 text-pink-500 mx-auto mb-4" />
-          <h2 className="text-3xl font-bold">Love PDFly?</h2>
+          <h2 className="text-3xl font-bold">Love PDFlytool?</h2>
           <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
-            PDFly is free for everyone, with no paywalls or premium plans.
+            PDFlytool is free for everyone, with no paywalls or premium plans.
             If it saved you time today, consider supporting the project with a small donation — it helps us pay for hosting and keep building new tools.
           </p>
           <Button asChild size="lg" className="mt-6 bg-pink-500 hover:bg-pink-600">
@@ -139,11 +139,11 @@ export default function HomePage() {
         <h2 className="text-2xl font-bold text-center mb-8">Frequently Asked Questions</h2>
         <div className="space-y-3 max-w-3xl mx-auto">
           {[
-            { q: "Is PDFly really free?", a: "Yes! All our PDF tools are 100% free with no hidden charges, no watermarks, and no signup required." },
+            { q: "Is PDFlytool really free?", a: "Yes! All our PDF tools are 100% free with no hidden charges, no watermarks, and no signup required." },
             { q: "Are my files safe?", a: "Absolutely. All processing happens locally in your browser using JavaScript. Your files never get uploaded to any server." },
             { q: "Do I need to create an account?", a: "No account required. Just open the tool and start processing your PDFs immediately." },
             { q: "Is there a file size limit?", a: "Most PDFs up to 25-50MB work smoothly. Very large files may take longer to process depending on your device." },
-            { q: "Which browsers are supported?", a: "PDFly works on all modern browsers including Chrome, Firefox, Edge, and Safari, on both desktop and mobile." },
+            { q: "Which browsers are supported?", a: "PDFlytool works on all modern browsers including Chrome, Firefox, Edge, and Safari, on both desktop and mobile." },
             { q: "How do you make money?", a: "We display non-intrusive ads to keep the service free. You can support us by disabling your ad blocker." },
           ].map((f) => (
             <details key={f.q} className="rounded-lg border bg-card p-4">
