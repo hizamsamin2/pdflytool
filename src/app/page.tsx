@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
   FileText, Merge, Minimize2, Shield, Zap,
-  FileImage, RotateCw, Droplet, Scissors, ArrowRight, Heart
+  FileImage, RotateCw, Droplet, Scissors, ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AdSlot } from "@/components/ad-slot";
@@ -96,25 +96,7 @@ export default function HomePage() {
         <AdSlot slot="1138897822" format="rectangle" className="h-64" />
       </section>
 
-      <section className="mx-auto max-w-4xl px-4 py-12">
-        <div className="rounded-2xl bg-gradient-to-br from-pink-50 via-pink-100 to-orange-50 border border-pink-200 p-8 md:p-12 text-center">
-          <Heart className="h-10 w-10 text-pink-500 mx-auto mb-4" />
-          <h2 className="text-3xl font-bold">Love PDFlytool?</h2>
-          <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
-            PDFlytool is free for everyone, with no paywalls or premium plans.
-            If it saved you time today, consider supporting the project with a small donation — it helps us pay for hosting and keep building new tools.
-          </p>
-          <Button asChild size="lg" className="mt-6 bg-pink-500 hover:bg-pink-600">
-            <Link href="/donate">
-              <Heart className="h-4 w-4 mr-2" />
-              Support the Project
-            </Link>
-          </Button>
-          <p className="mt-3 text-xs text-muted-foreground">One-time or monthly • From $3 • Multiple payment methods</p>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-4 py-12">
+<section className="mx-auto max-w-4xl px-4 py-12">
         <div className="rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10 border p-8 md:p-12">
           <h2 className="text-3xl font-bold text-center">How It Works</h2>
           <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-8">

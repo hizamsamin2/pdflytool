@@ -12,11 +12,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/tools/rotate`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/tools/watermark`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/tools/remove-pages`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${base}/pricing`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${base}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
     { url: `${base}/contact`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
     { url: `${base}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${base}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
-    { url: `${base}/donate`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
   ];
 }

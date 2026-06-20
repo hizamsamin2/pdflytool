@@ -8,7 +8,6 @@ import { downloadBlob, getFileNameWithoutExt } from "@/lib/utils";
 import { addWatermark } from "@/lib/pdf/sign";
 import { PdfPreview } from "@/components/pdf-preview";
 import { AdSlot } from "@/components/ad-slot";
-import { DonatePrompt } from "@/components/donate-prompt";
 
 export default function WatermarkPage() {
   const [files, setFiles] = useState<File[]>([]);
@@ -22,7 +21,6 @@ export default function WatermarkPage() {
   const [processing, setProcessing] = useState(false);
   const [resultBlob, setResultBlob] = useState<Blob | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [successCount, setSuccessCount] = useState(0);
 
   const handleFilesChange = (newFiles: File[]) => {
     setFiles(newFiles);
@@ -44,7 +42,6 @@ export default function WatermarkPage() {
         page: applyTo === "single" ? targetPage : undefined,
       });
       setResultBlob(blob);
-      setSuccessCount((c) => c + 1);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Watermark failed");
     } finally {
@@ -164,7 +161,6 @@ export default function WatermarkPage() {
 
         <aside><AdSlot slot="1138897822" format="rectangle" className="h-64" /></aside>
       </div>
-      <DonatePrompt trigger={successCount} />
     </div>
   );
 }

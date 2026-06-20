@@ -8,7 +8,6 @@ import { Download, Loader2, Merge, ArrowRight, FileText, Trash2 } from "lucide-r
 import { downloadBlob, formatBytes } from "@/lib/utils";
 import { mergePdfs, type MergeItem } from "@/lib/pdf/merge";
 import { AdSlot } from "@/components/ad-slot";
-import { DonatePrompt } from "@/components/donate-prompt";
 import { PdfPreview } from "@/components/pdf-preview";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
@@ -28,7 +27,6 @@ export default function MergePage() {
   const [resultBlob, setResultBlob] = useState<Blob | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [detectingPages, setDetectingPages] = useState(false);
-  const [successCount, setSuccessCount] = useState(0);
   const [expandedFileId, setExpandedFileId] = useState<string | null>(null);
 
   const handleFilesChange = async (newFiles: File[]) => {
@@ -131,7 +129,6 @@ export default function MergePage() {
       const blob = await mergePdfs(items);
       setProgress(100);
       setResultBlob(blob);
-      setSuccessCount((c) => c + 1);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Merge failed");
     } finally {
@@ -283,7 +280,6 @@ export default function MergePage() {
           <AdSlot slot="1138897822" format="rectangle" className="h-64" />
         </aside>
       </div>
-      <DonatePrompt trigger={successCount} />
     </div>
   );
 }
