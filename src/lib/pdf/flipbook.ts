@@ -48,7 +48,7 @@ export interface RenderProgress {
   message?: string;
 }
 
-const DEFAULT_SCALE = 2;
+const DEFAULT_SCALE = 2.5;
 
 export async function pdfToFlipbook(
   file: File,
@@ -84,7 +84,7 @@ export async function pdfToFlipbook(
 
     await page.render({ canvasContext: ctx, viewport }).promise;
 
-    const imageDataUrl = canvas.toDataURL("image/jpeg", 0.85);
+    const imageDataUrl = canvas.toDataURL("image/jpeg", 0.92);
 
     let text = "";
     try {
@@ -198,6 +198,7 @@ export async function buildStandaloneHtml(flipbook: Flipbook, title: string): Pr
     </div>
   </header>
   <main id="flipbook-container"></main>
+  <div id="reading-mode" class="reading-mode hidden"></div>
   <div id="search-overlay" class="search-overlay hidden">
     <input id="search-input" type="search" placeholder="Search in book..." />
     <div id="search-results"></div>
@@ -207,6 +208,7 @@ export async function buildStandaloneHtml(flipbook: Flipbook, title: string): Pr
     <button id="zoom-out-btn" title="Zoom out (-)">−</button>
     <button id="zoom-reset-btn" title="Reset zoom (0)">100%</button>
     <button id="zoom-in-btn" title="Zoom in (+)">+</button>
+    <button id="mode-btn" title="Toggle reading mode (R)">📖</button>
     <button id="fullscreen-btn" title="Fullscreen (F)">⛶</button>
   </div>
   <button id="search-btn" class="floating-btn" title="Search (S)">🔍</button>
@@ -267,6 +269,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .zoom-controls button:hover { background: rgba(255,255,255,0.12); }
 #zoom-reset-btn { font-size: 12px; font-variant-numeric: tabular-nums; }
 @media (max-width: 640px) { .flipbook-header h1 { display: none; } .search-overlay { left: 16px; right: 16px; width: auto; } }
+.reading-mode { flex: 1 1 auto; background: #2a2a2a; overflow-y: auto; overflow-x: hidden; padding: 16px; -webkit-overflow-scrolling: touch; touch-action: pan-y pinch-zoom; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.reading-mode.hidden { display: none; }
+.reading-mode img { max-width: 100%; height: auto; background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,0.5); border-radius: 2px; display: block; transform-origin: top center; transition: transform 0.1s; }
+.reading-mode .page-label { position: sticky; top: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); padding: 4px 12px; border-radius: 999px; font-size: 11px; color: #fff; z-index: 5; align-self: center; margin-bottom: -4px; }
+#flipbook-container.hidden { display: none; }
 `;
 
 const STANDALONE_JS = `
@@ -293,11 +300,13 @@ function initFlipbook(pagesData, outline) {
     baseHeight = baseWidth * baseRatio;
 
     createFlipbook();
+    buildReadingMode();
 
     setupControls();
     setupSearch(outline);
     setupKeyboard();
     setupZoom();
+    setupMode();
     updateZoomLabel();
 
     document.addEventListener('fullscreenchange', () => {
@@ -368,7 +377,58 @@ function applyZoom() {
   inner.style.transformOrigin = 'top center';
   inner.style.width = '100%';
   inner.style.minHeight = (baseHeight * zoomLevel) + 'px';
+  applyReadingZoom();
   updateZoomLabel();
+}
+
+function applyReadingZoom() {
+  const rm = document.getElementById('reading-mode');
+  if (!rm) return;
+  rm.querySelectorAll('img').forEach(img => {
+    img.style.transform = 'scale(' + zoomLevel + ')';
+  });
+}
+
+let readingMode = false;
+
+function buildReadingMode() {
+  const rm = document.getElementById('reading-mode');
+  if (!rm) return;
+  rm.innerHTML = '';
+  pages.forEach((p, idx) => {
+    const label = document.createElement('div');
+    label.className = 'page-label';
+    label.textContent = 'Page ' + p.pageNumber + ' / ' + pages.length;
+    rm.appendChild(label);
+    const img = document.createElement('img');
+    img.src = p.imageDataUrl;
+    img.alt = 'Page ' + p.pageNumber;
+    img.loading = 'lazy';
+    img.dataset.page = p.pageNumber;
+    rm.appendChild(img);
+  });
+}
+
+function setupMode() {
+  const btn = document.getElementById('mode-btn');
+  if (!btn) return;
+  btn.onclick = toggleMode;
+}
+
+function toggleMode() {
+  readingMode = !readingMode;
+  const container = document.getElementById('flipbook-container');
+  const rm = document.getElementById('reading-mode');
+  const btn = document.getElementById('mode-btn');
+  if (readingMode) {
+    container.classList.add('hidden');
+    rm.classList.remove('hidden');
+    if (btn) btn.style.background = 'rgba(59,130,246,0.3)';
+  } else {
+    container.classList.remove('hidden');
+    rm.classList.add('hidden');
+    if (btn) btn.style.background = '';
+  }
 }
 
 let pinchState = null;
@@ -426,6 +486,18 @@ function setupPinchZoom(container) {
       applyZoom();
     }
   }, { passive: false });
+
+  const rm = document.getElementById('reading-mode');
+  if (rm) {
+    rm.addEventListener('wheel', (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
+        zoomLevel = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoomLevel + delta));
+        applyReadingZoom();
+      }
+    }, { passive: false });
+  }
 }
 
 function updateIndicator() {
@@ -474,9 +546,10 @@ function setupZoom() {
 function setupKeyboard() {
   document.addEventListener('keydown', (e) => {
     if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
-    if (e.key === 'ArrowLeft' && pageFlip) pageFlip.flipPrev();
-    else if (e.key === 'ArrowRight' && pageFlip) pageFlip.flipNext();
+    if (e.key === 'ArrowLeft' && pageFlip && !readingMode) pageFlip.flipPrev();
+    else if (e.key === 'ArrowRight' && pageFlip && !readingMode) pageFlip.flipNext();
     else if (e.key.toLowerCase() === 's') toggleSearch();
+    else if (e.key.toLowerCase() === 'r') toggleMode();
     else if (e.key.toLowerCase() === 'f') {
       if (document.fullscreenElement) document.exitFullscreen();
       else document.documentElement.requestFullscreen();
