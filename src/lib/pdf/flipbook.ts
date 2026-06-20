@@ -8,6 +8,20 @@ async function getPdfjs() {
   return pdfjs;
 }
 
+let cachedPageFlipScript: string | null = null;
+
+async function getPageFlipScript(): Promise<string> {
+  if (cachedPageFlipScript !== null) return cachedPageFlipScript;
+  try {
+    const res = await fetch("/page-flip.browser.js");
+    if (!res.ok) throw new Error("fetch failed");
+    cachedPageFlipScript = await res.text();
+  } catch {
+    cachedPageFlipScript = "";
+  }
+  return cachedPageFlipScript;
+}
+
 export interface FlipbookPage {
   pageNumber: number;
   imageDataUrl: string;
@@ -152,12 +166,14 @@ export async function searchFlipbook(
 export async function buildStandaloneHtml(flipbook: Flipbook, title: string): Promise<Blob> {
   const css = STANDALONE_CSS;
   const js = STANDALONE_JS;
+  const pageFlipScript = await getPageFlipScript();
   const pagesJson = JSON.stringify(
     flipbook.pages.map((p) => ({
       pageNumber: p.pageNumber,
       imageDataUrl: p.imageDataUrl,
       width: p.width,
       height: p.height,
+      text: p.text,
     }))
   );
   const outlineJson = JSON.stringify(flipbook.outline);
@@ -189,6 +205,7 @@ export async function buildStandaloneHtml(flipbook: Flipbook, title: string): Pr
   </div>
   <button id="search-btn" class="floating-btn" title="Search (S)">🔍</button>
 </div>
+<script>${pageFlipScript}</script>
 <script>${js}</script>
 <script>
   const PAGES = ${pagesJson};
