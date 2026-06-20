@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/tools/rotate`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/tools/watermark`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/tools/remove-pages`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${base}/tools/flipbook`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
     { url: `${base}/contact`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
     { url: `${base}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },

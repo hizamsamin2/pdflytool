@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
   FileText, Merge, Minimize2, Shield, Zap,
-  FileImage, RotateCw, Droplet, Scissors, ArrowRight
+  FileImage, RotateCw, Droplet, Scissors, ArrowRight, BookOpen
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AdSlot } from "@/components/ad-slot";
@@ -15,6 +15,7 @@ export default function HomePage() {
     { icon: RotateCw, title: "Rotate PDF", desc: "Rotate pages by 90, 180, or 270 degrees", href: "/tools/rotate", color: "text-pink-600" },
     { icon: Droplet, title: "Add Watermark", desc: "Stamp text watermark on every page", href: "/tools/watermark", color: "text-cyan-600" },
     { icon: FileText, title: "Remove Pages", desc: "Delete specific pages from your PDF", href: "/tools/remove-pages", color: "text-red-600" },
+    { icon: BookOpen, title: "PDF to Flipbook", desc: "Turn PDF into interactive 3D flipbook", href: "/tools/flipbook", color: "text-indigo-600" },
   ];
 
   return (

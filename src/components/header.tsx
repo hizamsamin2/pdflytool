@@ -14,6 +14,7 @@ const tools = [
   { href: "/tools/convert", label: "Convert" },
   { href: "/tools/rotate", label: "Rotate" },
   { href: "/tools/watermark", label: "Watermark" },
+  { href: "/tools/flipbook", label: "Flipbook" },
 ];
 
 export function Header() {

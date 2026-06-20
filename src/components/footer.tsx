@@ -14,6 +14,7 @@ export function Footer() {
               <li><Link href="/tools/convert" className="hover:text-primary">Convert PDF</Link></li>
               <li><Link href="/tools/rotate" className="hover:text-primary">Rotate PDF</Link></li>
               <li><Link href="/tools/watermark" className="hover:text-primary">Watermark PDF</Link></li>
+              <li><Link href="/tools/flipbook" className="hover:text-primary">PDF to Flipbook</Link></li>
               <li><Link href="/tools/remove-pages" className="hover:text-primary">Remove Pages</Link></li>
             </ul>
           </div>
