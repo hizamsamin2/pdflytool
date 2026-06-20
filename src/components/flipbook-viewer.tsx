@@ -8,6 +8,8 @@ import {
   X,
   Maximize2,
   List,
+  ZoomIn,
+  ZoomOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Flipbook, FlipbookOutlineItem } from "@/lib/pdf/flipbook";
@@ -23,11 +25,87 @@ export function FlipbookViewer({ flipbook }: FlipbookViewerProps) {
   const [pageIndicator, setPageIndicator] = useState("1 / " + flipbook.pageCount);
   const [showSearch, setShowSearch] = useState(false);
   const [showOutline, setShowOutline] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<
     { pageNumber: number; snippet: string }[]
   >([]);
   const [searching, setSearching] = useState(false);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    let pinchState: { startDist: number; startZoom: number } | null = null;
+    let lastTap = 0;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const t1 = e.touches[0];
+        const t2 = e.touches[1];
+        pinchState = {
+          startDist: Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY),
+          startZoom: zoomLevel
+        };
+      } else if (e.touches.length === 1) {
+        const now = Date.now();
+        if (now - lastTap < 300) {
+          e.preventDefault();
+          setZoomLevel((z) => (z > 1.05 ? 1 : Math.min(3, z + 0.5)));
+          lastTap = 0;
+        } else {
+          lastTap = now;
+        }
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 2 && pinchState) {
+        e.preventDefault();
+        const t1 = e.touches[0];
+        const t2 = e.touches[1];
+        const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+        const ratio = dist / pinchState.startDist;
+        const newZoom = pinchState.startZoom * ratio;
+        setZoomLevel(Math.max(0.5, Math.min(3, newZoom)));
+      }
+    };
+
+    const onTouchEnd = () => {
+      pinchState = null;
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.25 : 0.25;
+        setZoomLevel((z) => Math.max(0.5, Math.min(3, z + delta)));
+      }
+    };
+
+    container.addEventListener("touchstart", onTouchStart, { passive: false });
+    container.addEventListener("touchmove", onTouchMove, { passive: false });
+    container.addEventListener("touchend", onTouchEnd);
+    container.addEventListener("wheel", onWheel, { passive: false });
+
+    return () => {
+      container.removeEventListener("touchstart", onTouchStart);
+      container.removeEventListener("touchmove", onTouchMove);
+      container.removeEventListener("touchend", onTouchEnd);
+      container.removeEventListener("wheel", onWheel);
+    };
+  }, [zoomLevel]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const inner = container.querySelector(".stf__wrapper") as HTMLElement | null;
+    if (!inner) return;
+    inner.style.transform = `scale(${zoomLevel})`;
+    inner.style.transformOrigin = "top center";
+    inner.style.minHeight = `${zoomLevel * 100}%`;
+  }, [zoomLevel]);
 
   useEffect(() => {
     if (!containerRef.current || flipbook.pages.length === 0) return;
@@ -160,6 +238,9 @@ export function FlipbookViewer({ flipbook }: FlipbookViewerProps) {
       else if (e.key.toLowerCase() === "s") setShowSearch((v) => !v);
       else if (e.key.toLowerCase() === "t") setShowOutline((v) => !v);
       else if (e.key.toLowerCase() === "f") toggleFullscreen();
+      else if (e.key === "+" || e.key === "=") setZoomLevel((z) => Math.min(3, z + 0.25));
+      else if (e.key === "-" || e.key === "_") setZoomLevel((z) => Math.max(0.5, z - 0.25));
+      else if (e.key === "0") setZoomLevel(1);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -183,6 +264,29 @@ export function FlipbookViewer({ flipbook }: FlipbookViewerProps) {
         </div>
 
         <div className="flex items-center gap-1">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setZoomLevel((z) => Math.max(0.5, +(z - 0.25).toFixed(2)))}
+            title="Zoom out (-)"
+          >
+            <ZoomOut className="h-4 w-4" />
+          </Button>
+          <button
+            onClick={() => setZoomLevel(1)}
+            className="text-xs tabular-nums px-2 min-w-[44px] text-center h-8 rounded-md border hover:bg-accent"
+            title="Reset zoom (0)"
+          >
+            {Math.round(zoomLevel * 100)}%
+          </button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setZoomLevel((z) => Math.min(3, +(z + 0.25).toFixed(2)))}
+            title="Zoom in (+)"
+          >
+            <ZoomIn className="h-4 w-4" />
+          </Button>
           <Button
             variant="outline"
             size="sm"
@@ -213,7 +317,7 @@ export function FlipbookViewer({ flipbook }: FlipbookViewerProps) {
 
       <div
         ref={containerRef}
-        className="bg-white rounded-lg overflow-hidden mx-auto shadow-2xl"
+        className="bg-white rounded-lg overflow-hidden mx-auto shadow-2xl touch-none"
         style={{ width: "100%", maxWidth: 1200, height: 600 }}
       />
 

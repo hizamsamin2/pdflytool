@@ -48,7 +48,7 @@ export interface RenderProgress {
   message?: string;
 }
 
-const DEFAULT_SCALE = 1.5;
+const DEFAULT_SCALE = 2;
 
 export async function pdfToFlipbook(
   file: File,
@@ -245,7 +245,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .flipbook-controls button { width: 36px; height: 36px; border: none; background: rgba(255,255,255,0.1); color: #fff; border-radius: 6px; cursor: pointer; font-size: 18px; transition: background 0.2s; }
 .flipbook-controls button:hover { background: rgba(255,255,255,0.2); }
 #page-indicator { min-width: 60px; text-align: center; font-variant-numeric: tabular-nums; font-size: 14px; }
-#flipbook-container { flex: 1 1 auto; position: relative; background: #1a1a1a; overflow: auto; display: flex; align-items: flex-start; justify-content: center; padding: 20px; min-height: 0; }
+#flipbook-container { flex: 1 1 auto; position: relative; background: #1a1a1a; overflow: auto; display: flex; align-items: flex-start; justify-content: center; padding: 20px; min-height: 0; -webkit-overflow-scrolling: touch; touch-action: pan-y pinch-zoom; overscroll-behavior: contain; }
+#flipbook-container .stf__wrapper { transform-origin: top center; will-change: transform; }
 .page-flip-container { position: relative; width: 100%; height: 100%; }
 .stf__block { background: #fff !important; }
 .search-overlay { position: fixed; top: 60px; right: 16px; width: 320px; max-height: 70vh; background: rgba(20,20,20,0.95); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 12px; z-index: 20; display: flex; flex-direction: column; }
@@ -288,7 +289,7 @@ function initFlipbook(pagesData, outline) {
   const firstImg = new Image();
   firstImg.onload = function() {
     baseRatio = firstImg.naturalHeight / firstImg.naturalWidth;
-    baseWidth = Math.min(800, window.innerWidth - 40);
+    baseWidth = window.innerWidth < 640 ? window.innerWidth : Math.min(800, window.innerWidth - 40);
     baseHeight = baseWidth * baseRatio;
 
     createFlipbook();
@@ -354,6 +355,7 @@ function createFlipbook() {
     updateIndicator();
   });
 
+  setupPinchZoom(container);
   applyZoom();
 }
 
@@ -367,6 +369,63 @@ function applyZoom() {
   inner.style.width = '100%';
   inner.style.minHeight = (baseHeight * zoomLevel) + 'px';
   updateZoomLabel();
+}
+
+let pinchState = null;
+
+function setupPinchZoom(container) {
+  let lastTap = 0;
+  container.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      pinchState = {
+        startDist: Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY),
+        startZoom: zoomLevel
+      };
+    } else if (e.touches.length === 1) {
+      const now = Date.now();
+      if (now - lastTap < 300) {
+        e.preventDefault();
+        if (zoomLevel > 1.05) {
+          zoomLevel = 1;
+        } else {
+          zoomLevel = Math.min(ZOOM_MAX, zoomLevel + 0.5);
+        }
+        applyZoom();
+        lastTap = 0;
+      } else {
+        lastTap = now;
+      }
+    }
+  }, { passive: false });
+
+  container.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2 && pinchState) {
+      e.preventDefault();
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+      const ratio = dist / pinchState.startDist;
+      const newZoom = pinchState.startZoom * ratio;
+      zoomLevel = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, newZoom));
+      applyZoom();
+    }
+  }, { passive: false });
+
+  container.addEventListener('touchend', () => {
+    pinchState = null;
+  });
+
+  container.addEventListener('wheel', (e) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
+      zoomLevel = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoomLevel + delta));
+      applyZoom();
+    }
+  }, { passive: false });
 }
 
 function updateIndicator() {
