@@ -255,7 +255,7 @@ function initFlipbook(pagesData, outline) {
     const targetWidth = Math.min(800, window.innerWidth - 40);
     const targetHeight = targetWidth * ratio;
     
-    pageFlip = new StPageFlip(container, {
+    pageFlip = new St.PageFlip(container, {
       width: targetWidth,
       height: targetHeight,
       size: 'stretch',

@@ -37,7 +37,11 @@ export function FlipbookViewer({ flipbook }: FlipbookViewerProps) {
 
     (async () => {
       const PageFlipMod = await import("page-flip");
-      const PageFlip = PageFlipMod.default;
+      const PageFlip = (PageFlipMod as any).PageFlip || (PageFlipMod as any).default?.PageFlip || (PageFlipMod as any).default;
+      if (!PageFlip) {
+        console.error("[flipbook] PageFlip class not found in module", Object.keys(PageFlipMod));
+        return;
+      }
       if (!mounted || !containerRef.current) return;
 
       const first = flipbook.pages[0];

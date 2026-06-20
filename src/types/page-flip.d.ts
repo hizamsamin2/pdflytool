@@ -44,7 +44,7 @@ declare module "page-flip" {
     | "zoom"
     | "destroy";
 
-  export default class PageFlip {
+  export class PageFlip {
     constructor(parentElement: HTMLElement, settings: FlipSetting);
     loadFromImages(images: string[]): Promise<void>;
     loadFromHtml(items: HTMLElement[]): Promise<void>;
