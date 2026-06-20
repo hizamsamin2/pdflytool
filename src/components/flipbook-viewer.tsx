@@ -42,23 +42,50 @@ export function FlipbookViewer({ flipbook }: FlipbookViewerProps) {
 
       const first = flipbook.pages[0];
       const aspectRatio = first.height / first.width;
-      const targetWidth = Math.min(800, window.innerWidth - 40);
+      const targetWidth = Math.min(800, (containerRef.current.parentElement?.clientWidth || window.innerWidth) - 40);
       const targetHeight = targetWidth * aspectRatio;
+
+      const preloadImages = (urls: string[]): Promise<void[]> => {
+        return Promise.all(
+          urls.map(
+            (url) =>
+              new Promise<void>((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve();
+                img.onerror = () => resolve();
+                img.src = url;
+              })
+          )
+        );
+      };
+
+      await preloadImages(flipbook.pages.map((p) => p.imageDataUrl));
+      if (!mounted || !containerRef.current) return;
+
+      console.log("[flipbook] init", {
+        pages: flipbook.pages.length,
+        firstW: first.width,
+        firstH: first.height,
+        targetWidth,
+        targetHeight,
+        containerW: containerRef.current.offsetWidth,
+        containerH: containerRef.current.offsetHeight,
+      });
 
       flipInstance = new PageFlip(containerRef.current, {
         width: targetWidth,
         height: targetHeight,
-        size: "stretch",
-        minWidth: 280,
-        maxWidth: 1200,
-        minHeight: Math.floor(280 * aspectRatio),
-        maxHeight: Math.floor(1200 * aspectRatio),
+        size: "fixed",
+        minWidth: targetWidth,
+        maxWidth: targetWidth,
+        minHeight: targetHeight,
+        maxHeight: targetHeight,
         showCover: false,
         mobileScrollSupport: true,
         flippingTime: 600,
         usePortrait: true,
         startZIndex: 0,
-        autoSize: true,
+        autoSize: false,
         maxShadowOpacity: 0.5,
         drawShadow: true,
         useMouseEvents: true,
@@ -182,8 +209,8 @@ export function FlipbookViewer({ flipbook }: FlipbookViewerProps) {
 
       <div
         ref={containerRef}
-        className="bg-zinc-900 rounded-lg overflow-hidden mx-auto"
-        style={{ minHeight: 400 }}
+        className="bg-white rounded-lg overflow-hidden mx-auto shadow-2xl"
+        style={{ width: "100%", maxWidth: 1200, height: 600 }}
       />
 
       {showSearch && (
