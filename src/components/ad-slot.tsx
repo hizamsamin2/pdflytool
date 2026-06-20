@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 declare global {
   interface Window {
@@ -17,6 +17,8 @@ interface Props {
 export function AdSlot({ slot, format = "auto", className = "" }: Props) {
   const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_ID;
   const isPlaceholder = !adsenseId || adsenseId.includes("xxxxxxxx");
+  const insRef = useRef<HTMLModElement>(null);
+  const [filled, setFilled] = useState(false);
 
   useEffect(() => {
     if (isPlaceholder || !adsenseId) return;
@@ -25,6 +27,16 @@ export function AdSlot({ slot, format = "auto", className = "" }: Props) {
     } catch (e) {
       console.error("AdSense error:", e);
     }
+    const t = setTimeout(() => {
+      const el = insRef.current;
+      if (!el) return;
+      const dataAdHeight =
+        el.getAttribute("data-adsbygoogle-status") !== null
+          ? el.offsetHeight
+          : 0;
+      setFilled(el.offsetHeight > 0 || dataAdHeight > 0);
+    }, 2500);
+    return () => clearTimeout(t);
   }, [isPlaceholder, adsenseId]);
 
   if (isPlaceholder) {
@@ -37,8 +49,9 @@ export function AdSlot({ slot, format = "auto", className = "" }: Props) {
 
   return (
     <ins
+      ref={insRef}
       className={`adsbygoogle ${className}`}
-      style={{ display: "block" }}
+      style={{ display: filled ? "block" : "none" }}
       data-ad-client={adsenseId}
       data-ad-slot={slot}
       data-ad-format={format}
