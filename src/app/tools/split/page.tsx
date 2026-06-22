@@ -7,10 +7,12 @@ import { Download, Loader2, Scissors, ArrowRight, FileText, ChevronLeft, Chevron
 import { downloadBlob, getFileNameWithoutExt } from "@/lib/utils";
 import { splitPdf } from "@/lib/pdf/merge";
 import { PdfPreview } from "@/components/pdf-preview";
-import { AdSlot, useAdsConfigured } from "@/components/ad-slot";
+import { AdSlot, useAdsConfigured, useAdsFilled } from "@/components/ad-slot";
 
 export default function SplitPage() {
   const adsConfigured = useAdsConfigured();
+  const adsFilled = useAdsFilled();
+  const showSidebar = adsConfigured && adsFilled;
   const [files, setFiles] = useState<File[]>([]);
   const [ranges, setRanges] = useState<string>("1-1");
   const [processing, setProcessing] = useState(false);
@@ -70,14 +72,14 @@ export default function SplitPage() {
   return (
     <div
       className={
-        adsConfigured
+        showSidebar
           ? "mx-auto max-w-5xl px-4 py-8"
           : "mx-auto max-w-3xl px-4 py-8"
       }
     >
       <div
         className={
-          adsConfigured
+          showSidebar
             ? "grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8"
             : ""
         }
@@ -171,7 +173,9 @@ export default function SplitPage() {
           )}
         </div>
 
-        <aside><AdSlot slot="1138897822" format="rectangle" className="h-64" /></aside>
+        {showSidebar && (
+          <aside><AdSlot slot="1138897822" format="rectangle" className="h-64" /></aside>
+        )}
       </div>
     </div>
   );

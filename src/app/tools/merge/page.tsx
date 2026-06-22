@@ -7,7 +7,11 @@ import { Progress } from "@/components/ui/progress";
 import { Download, Loader2, Merge, ArrowRight, FileText, Trash2 } from "lucide-react";
 import { downloadBlob, formatBytes } from "@/lib/utils";
 import { mergePdfs, type MergeItem } from "@/lib/pdf/merge";
-import { AdSlot, useAdsConfigured } from "@/components/ad-slot";
+import {
+  AdSlot,
+  useAdsConfigured,
+  useAdsFilled,
+} from "@/components/ad-slot";
 import { PdfPreview } from "@/components/pdf-preview";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
@@ -22,6 +26,8 @@ interface MergeFileState {
 
 export default function MergePage() {
   const adsConfigured = useAdsConfigured();
+  const adsFilled = useAdsFilled();
+  const showSidebar = adsConfigured && adsFilled;
   const [files, setFiles] = useState<MergeFileState[]>([]);
   const [processing, setProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -140,14 +146,14 @@ export default function MergePage() {
   return (
     <div
       className={
-        adsConfigured
+        showSidebar
           ? "mx-auto max-w-5xl px-4 py-8"
           : "mx-auto max-w-3xl px-4 py-8"
       }
     >
       <div
         className={
-          adsConfigured
+          showSidebar
             ? "grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8"
             : ""
         }
@@ -289,9 +295,11 @@ export default function MergePage() {
           )}
         </div>
 
-        <aside className="space-y-4">
-          <AdSlot slot="1138897822" format="rectangle" className="h-64" />
-        </aside>
+        {showSidebar && (
+          <aside className="space-y-4">
+            <AdSlot slot="1138897822" format="rectangle" className="h-64" />
+          </aside>
+        )}
       </div>
     </div>
   );

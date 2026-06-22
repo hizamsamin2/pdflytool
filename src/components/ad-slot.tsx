@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useSyncExternalStore,
+} from "react";
 
 declare global {
   interface Window {
@@ -35,11 +41,75 @@ export function useAdsConfigured(): boolean {
   return ctx;
 }
 
+let adFilled = false;
+const listeners = new Set<() => void>();
+function subscribe(cb: () => void) {
+  listeners.add(cb);
+  return () => listeners.delete(cb);
+}
+function getSnapshot() {
+  return adFilled;
+}
+function getServerSnapshot() {
+  return false;
+}
+function setAdFilled(v: boolean) {
+  if (adFilled === v) return;
+  adFilled = v;
+  listeners.forEach((cb) => cb());
+}
+
+function startWatching() {
+  if (typeof window === "undefined") return;
+  if ((startWatching as { started?: boolean }).started) return;
+  (startWatching as { started?: boolean }).started = true;
+
+  const checkFilled = (): boolean => {
+    const ins = document.querySelector(
+      "ins.adsbygoogle[data-adsbygoogle-status='filled']"
+    ) as HTMLElement | null;
+    if (ins && ins.offsetHeight > 0) return true;
+    const tall = Array.from(
+      document.querySelectorAll("ins.adsbygoogle")
+    ) as HTMLElement[];
+    return tall.some((el) => el.offsetHeight > 100);
+  };
+
+  if (checkFilled()) {
+    setAdFilled(true);
+    return;
+  }
+
+  const observer = new MutationObserver(() => {
+    if (checkFilled()) {
+      setAdFilled(true);
+      observer.disconnect();
+    }
+  });
+  observer.observe(document.body, {
+    attributes: true,
+    subtree: true,
+    attributeFilter: ["data-adsbygoogle-status", "style"],
+    childList: true,
+  });
+
+  setTimeout(() => {
+    if (checkFilled()) setAdFilled(true);
+  }, 5000);
+}
+
+export function useAdsFilled(): boolean {
+  const configured = useAdsConfigured();
+  useEffect(() => {
+    if (configured) startWatching();
+  }, [configured]);
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+}
+
 export function AdSlot({ slot, format = "auto", className = "" }: Props) {
   const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_ID;
   const isPlaceholder = !adsenseId || adsenseId.includes("xxxxxxxx");
   const insRef = useRef<HTMLModElement>(null);
-  const [filled, setFilled] = useState(false);
 
   useEffect(() => {
     if (isPlaceholder || !adsenseId) return;
@@ -48,16 +118,6 @@ export function AdSlot({ slot, format = "auto", className = "" }: Props) {
     } catch (e) {
       console.error("AdSense error:", e);
     }
-    const t = setTimeout(() => {
-      const el = insRef.current;
-      if (!el) return;
-      const dataAdHeight =
-        el.getAttribute("data-adsbygoogle-status") !== null
-          ? el.offsetHeight
-          : 0;
-      setFilled(el.offsetHeight > 0 || dataAdHeight > 0);
-    }, 2500);
-    return () => clearTimeout(t);
   }, [isPlaceholder, adsenseId]);
 
   if (isPlaceholder) {
@@ -68,7 +128,7 @@ export function AdSlot({ slot, format = "auto", className = "" }: Props) {
     <ins
       ref={insRef}
       className={`adsbygoogle ${className}`}
-      style={{ display: filled ? "block" : "none" }}
+      style={{ display: "block" }}
       data-ad-client={adsenseId}
       data-ad-slot={slot}
       data-ad-format={format}

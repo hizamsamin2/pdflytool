@@ -7,12 +7,14 @@ import { Progress } from "@/components/ui/progress";
 import { Download, Loader2, Minimize2, ArrowRight, TrendingDown } from "lucide-react";
 import { downloadBlob, formatBytes, getFileNameWithoutExt } from "@/lib/utils";
 import { compressWithStats } from "@/lib/pdf/compress";
-import { AdSlot, useAdsConfigured } from "@/components/ad-slot";
+import { AdSlot, useAdsConfigured, useAdsFilled } from "@/components/ad-slot";
 
 type Level = "low" | "medium" | "high";
 
 export default function CompressPage() {
   const adsConfigured = useAdsConfigured();
+  const adsFilled = useAdsFilled();
+  const showSidebar = adsConfigured && adsFilled;
   const [files, setFiles] = useState<File[]>([]);
   const [level, setLevel] = useState<Level>("medium");
   const [processing, setProcessing] = useState(false);
@@ -47,14 +49,14 @@ export default function CompressPage() {
   return (
     <div
       className={
-        adsConfigured
+        showSidebar
           ? "mx-auto max-w-4xl px-4 py-8"
           : "mx-auto max-w-3xl px-4 py-8"
       }
     >
       <div
         className={
-          adsConfigured
+          showSidebar
             ? "grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8"
             : ""
         }
@@ -130,9 +132,11 @@ export default function CompressPage() {
           )}
         </div>
 
-        <aside className="space-y-4">
-          <AdSlot slot="1138897822" format="rectangle" className="h-64" />
-        </aside>
+        {showSidebar && (
+          <aside className="space-y-4">
+            <AdSlot slot="1138897822" format="rectangle" className="h-64" />
+          </aside>
+        )}
       </div>
     </div>
   );

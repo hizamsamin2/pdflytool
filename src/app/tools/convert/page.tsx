@@ -7,12 +7,14 @@ import { Progress } from "@/components/ui/progress";
 import { Download, Loader2, ArrowRight, FileImage } from "lucide-react";
 import { downloadBlob, formatBytes, getFileNameWithoutExt } from "@/lib/utils";
 import { pdfToImages, imagesToPdf } from "@/lib/pdf/convert";
-import { AdSlot, useAdsConfigured } from "@/components/ad-slot";
+import { AdSlot, useAdsConfigured, useAdsFilled } from "@/components/ad-slot";
 
 type Direction = "pdf-to-jpg" | "pdf-to-png" | "jpg-to-pdf" | "png-to-pdf";
 
 export default function ConvertPage() {
   const adsConfigured = useAdsConfigured();
+  const adsFilled = useAdsFilled();
+  const showSidebar = adsConfigured && adsFilled;
   const [files, setFiles] = useState<File[]>([]);
   const [direction, setDirection] = useState<Direction>("pdf-to-jpg");
   const [processing, setProcessing] = useState(false);
@@ -66,14 +68,14 @@ export default function ConvertPage() {
   return (
     <div
       className={
-        adsConfigured
+        showSidebar
           ? "mx-auto max-w-4xl px-4 py-8"
           : "mx-auto max-w-3xl px-4 py-8"
       }
     >
       <div
         className={
-          adsConfigured
+          showSidebar
             ? "grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8"
             : ""
         }
@@ -146,10 +148,12 @@ export default function ConvertPage() {
           )}
         </div>
 
-        <aside className="space-y-4">
-          <AdSlot slot="1138897822" format="rectangle" className="h-64" />
-          <AdSlot slot="1138897822" format="vertical" className="h-64" />
-        </aside>
+        {showSidebar && (
+          <aside className="space-y-4">
+            <AdSlot slot="1138897822" format="rectangle" className="h-64" />
+            <AdSlot slot="1138897822" format="vertical" className="h-64" />
+          </aside>
+        )}
       </div>
     </div>
   );

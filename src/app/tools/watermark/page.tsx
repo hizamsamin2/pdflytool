@@ -7,10 +7,12 @@ import { Download, Loader2, Droplet, ArrowRight } from "lucide-react";
 import { downloadBlob, getFileNameWithoutExt } from "@/lib/utils";
 import { addWatermark } from "@/lib/pdf/sign";
 import { PdfPreview } from "@/components/pdf-preview";
-import { AdSlot, useAdsConfigured } from "@/components/ad-slot";
+import { AdSlot, useAdsConfigured, useAdsFilled } from "@/components/ad-slot";
 
 export default function WatermarkPage() {
   const adsConfigured = useAdsConfigured();
+  const adsFilled = useAdsFilled();
+  const showSidebar = adsConfigured && adsFilled;
   const [files, setFiles] = useState<File[]>([]);
   const [text, setText] = useState("CONFIDENTIAL");
   const [fontSize, setFontSize] = useState(48);
@@ -53,14 +55,14 @@ export default function WatermarkPage() {
   return (
     <div
       className={
-        adsConfigured
+        showSidebar
           ? "mx-auto max-w-5xl px-4 py-8"
           : "mx-auto max-w-3xl px-4 py-8"
       }
     >
       <div
         className={
-          adsConfigured
+          showSidebar
             ? "grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8"
             : ""
         }
@@ -172,7 +174,9 @@ export default function WatermarkPage() {
           )}
         </div>
 
-        <aside><AdSlot slot="1138897822" format="rectangle" className="h-64" /></aside>
+        {showSidebar && (
+          <aside><AdSlot slot="1138897822" format="rectangle" className="h-64" /></aside>
+        )}
       </div>
     </div>
   );
