@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 declare global {
   interface Window {
@@ -12,6 +12,27 @@ interface Props {
   slot: string;
   format?: "auto" | "rectangle" | "vertical" | "horizontal";
   className?: string;
+}
+
+const AdsConfiguredContext = createContext<boolean | null>(null);
+
+export function AdsConfiguredProvider({ children }: { children: React.ReactNode }) {
+  const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_ID;
+  const configured = !!(adsenseId && !adsenseId.includes("xxxxxxxx"));
+  return (
+    <AdsConfiguredContext.Provider value={configured}>
+      {children}
+    </AdsConfiguredContext.Provider>
+  );
+}
+
+export function useAdsConfigured(): boolean {
+  const ctx = useContext(AdsConfiguredContext);
+  if (ctx === null) {
+    const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_ID;
+    return !!(adsenseId && !adsenseId.includes("xxxxxxxx"));
+  }
+  return ctx;
 }
 
 export function AdSlot({ slot, format = "auto", className = "" }: Props) {
@@ -40,11 +61,7 @@ export function AdSlot({ slot, format = "auto", className = "" }: Props) {
   }, [isPlaceholder, adsenseId]);
 
   if (isPlaceholder) {
-    return (
-      <div className={`ad-slot ${className}`}>
-        <span>Ad Space — Configure NEXT_PUBLIC_ADSENSE_ID</span>
-      </div>
-    );
+    return null;
   }
 
   return (

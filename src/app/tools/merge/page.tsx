@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Download, Loader2, Merge, ArrowRight, FileText, Trash2 } from "lucide-react";
 import { downloadBlob, formatBytes } from "@/lib/utils";
 import { mergePdfs, type MergeItem } from "@/lib/pdf/merge";
-import { AdSlot } from "@/components/ad-slot";
+import { AdSlot, useAdsConfigured } from "@/components/ad-slot";
 import { PdfPreview } from "@/components/pdf-preview";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
@@ -21,6 +21,7 @@ interface MergeFileState {
 }
 
 export default function MergePage() {
+  const adsConfigured = useAdsConfigured();
   const [files, setFiles] = useState<MergeFileState[]>([]);
   const [processing, setProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -138,7 +139,13 @@ export default function MergePage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">
+      <div
+        className={
+          adsConfigured
+            ? "grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8"
+            : "mx-auto max-w-3xl"
+        }
+      >
         <div>
           <header className="mb-6">
             <h1 className="text-3xl font-bold flex items-center gap-2">

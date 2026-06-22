@@ -7,11 +7,12 @@ import { Progress } from "@/components/ui/progress";
 import { Download, Loader2, Minimize2, ArrowRight, TrendingDown } from "lucide-react";
 import { downloadBlob, formatBytes, getFileNameWithoutExt } from "@/lib/utils";
 import { compressWithStats } from "@/lib/pdf/compress";
-import { AdSlot } from "@/components/ad-slot";
+import { AdSlot, useAdsConfigured } from "@/components/ad-slot";
 
 type Level = "low" | "medium" | "high";
 
 export default function CompressPage() {
+  const adsConfigured = useAdsConfigured();
   const [files, setFiles] = useState<File[]>([]);
   const [level, setLevel] = useState<Level>("medium");
   const [processing, setProcessing] = useState(false);
@@ -45,7 +46,13 @@ export default function CompressPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">
+      <div
+        className={
+          adsConfigured
+            ? "grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8"
+            : "mx-auto max-w-3xl"
+        }
+      >
         <div>
           <header className="mb-6">
             <h1 className="text-3xl font-bold flex items-center gap-2">

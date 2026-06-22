@@ -7,9 +7,10 @@ import { Download, Loader2, Droplet, ArrowRight } from "lucide-react";
 import { downloadBlob, getFileNameWithoutExt } from "@/lib/utils";
 import { addWatermark } from "@/lib/pdf/sign";
 import { PdfPreview } from "@/components/pdf-preview";
-import { AdSlot } from "@/components/ad-slot";
+import { AdSlot, useAdsConfigured } from "@/components/ad-slot";
 
 export default function WatermarkPage() {
+  const adsConfigured = useAdsConfigured();
   const [files, setFiles] = useState<File[]>([]);
   const [text, setText] = useState("CONFIDENTIAL");
   const [fontSize, setFontSize] = useState(48);
@@ -51,7 +52,13 @@ export default function WatermarkPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">
+      <div
+        className={
+          adsConfigured
+            ? "grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8"
+            : "mx-auto max-w-3xl"
+        }
+      >
         <div>
           <header className="mb-6">
             <h1 className="text-3xl font-bold flex items-center gap-2">

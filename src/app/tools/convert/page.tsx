@@ -7,11 +7,12 @@ import { Progress } from "@/components/ui/progress";
 import { Download, Loader2, ArrowRight, FileImage } from "lucide-react";
 import { downloadBlob, formatBytes, getFileNameWithoutExt } from "@/lib/utils";
 import { pdfToImages, imagesToPdf } from "@/lib/pdf/convert";
-import { AdSlot } from "@/components/ad-slot";
+import { AdSlot, useAdsConfigured } from "@/components/ad-slot";
 
 type Direction = "pdf-to-jpg" | "pdf-to-png" | "jpg-to-pdf" | "png-to-pdf";
 
 export default function ConvertPage() {
+  const adsConfigured = useAdsConfigured();
   const [files, setFiles] = useState<File[]>([]);
   const [direction, setDirection] = useState<Direction>("pdf-to-jpg");
   const [processing, setProcessing] = useState(false);
@@ -64,7 +65,13 @@ export default function ConvertPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">
+      <div
+        className={
+          adsConfigured
+            ? "grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8"
+            : "mx-auto max-w-3xl"
+        }
+      >
         <div>
           <header className="mb-6">
             <h1 className="text-3xl font-bold flex items-center gap-2">
