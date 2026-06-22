@@ -4,7 +4,7 @@ import {
   FileImage, RotateCw, Droplet, Scissors, ArrowRight, BookOpen
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AdSlot } from "@/components/ad-slot";
+import { AdSection } from "@/components/ad-slot";
 
 export default function HomePage() {
   const tools = [
@@ -43,9 +43,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 pb-4">
-        <AdSlot slot="1138897822" format="horizontal" className="h-24" />
-      </section>
+      <AdSection slot="1138897822" format="horizontal" className="h-24" />
 
       <section id="tools" className="mx-auto max-w-6xl px-4 py-8">
         <div className="text-center mb-6">
@@ -93,9 +91,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-8">
-        <AdSlot slot="1138897822" format="rectangle" className="h-64" />
-      </section>
+      <AdSection slot="1138897822" format="rectangle" className="h-64" />
 
       <section className="mx-auto max-w-4xl px-4 py-8">
         <div className="rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10 border p-8 md:p-10">

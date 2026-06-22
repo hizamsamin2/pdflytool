@@ -136,3 +136,18 @@ export function AdSlot({ slot, format = "auto", className = "" }: Props) {
     />
   );
 }
+
+export function AdSection({
+  slot,
+  format = "auto",
+  className = "",
+}: Props) {
+  const configured = useAdsConfigured();
+  const filled = useAdsFilled();
+  if (!configured || !filled) return null;
+  return (
+    <section className="mx-auto max-w-6xl px-4 py-8">
+      <AdSlot slot={slot} format={format} className={className} />
+    </section>
+  );
+}
