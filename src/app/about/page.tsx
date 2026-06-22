@@ -4,6 +4,7 @@ import Link from "next/link";
 export const metadata = {
   title: "About",
   description: "Learn about PDFlytool — a free, privacy-first PDF tools platform.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {

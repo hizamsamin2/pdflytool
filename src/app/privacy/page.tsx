@@ -1,6 +1,8 @@
 export const metadata = {
   title: "Privacy Policy",
   description: "How PDFlytool handles your data and privacy.",
+  alternates: { canonical: "/privacy" },
+  robots: { index: true, follow: true },
 };
 
 export default function PrivacyPage() {

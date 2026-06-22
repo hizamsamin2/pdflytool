@@ -62,11 +62,37 @@ export const defaultMetadata: Metadata = {
     title: "PDFlytool — Free PDF Tools Online",
     description: "Free online PDF tools. Private, fast, and easy to use.",
     siteName: "PDFlytool",
+    images: [
+      {
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://pdflytool.com"}/og/home`,
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "PDFlytool — Free PDF Tools",
     description: "Free online PDF tools. Private, fast, and easy to use.",
+    images: [
+      `${process.env.NEXT_PUBLIC_SITE_URL || "https://pdflytool.com"}/og/home`,
+    ],
   },
-  robots: { index: true, follow: true },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
+  alternates: {
+    canonical: "/",
+  },
 };

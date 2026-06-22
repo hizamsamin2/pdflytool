@@ -1,6 +1,8 @@
 export const metadata = {
   title: "Terms of Service",
   description: "Terms and conditions for using PDFlytool.",
+  alternates: { canonical: "/terms" },
+  robots: { index: true, follow: true },
 };
 
 export default function TermsPage() {

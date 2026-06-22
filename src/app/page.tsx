@@ -5,6 +5,29 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AdSection } from "@/components/ad-slot";
+import {
+  SITE,
+  homeJsonLd,
+  renderJsonLdList,
+} from "@/lib/seo";
+
+export const metadata = {
+  alternates: { canonical: SITE.url },
+  openGraph: {
+    type: "website",
+    url: SITE.url,
+    title: `${SITE.name} — Free PDF Tools Online`,
+    description: SITE.description,
+    siteName: SITE.name,
+    images: [{ url: `${SITE.ogImage}/home`, width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE.name} — Free PDF Tools Online`,
+    description: SITE.description,
+    images: [`${SITE.ogImage}/home`],
+  },
+};
 
 export default function HomePage() {
   const tools = [
@@ -20,6 +43,7 @@ export default function HomePage() {
 
   return (
     <>
+      {renderJsonLdList(homeJsonLd())}
       <section className="mx-auto max-w-6xl px-4 py-12 md:py-16 text-center">
         <div className="inline-flex items-center gap-1.5 rounded-full bg-green-50 border border-green-200 px-3 py-1 text-xs font-medium text-green-700 mb-5">
           <Shield className="h-3 w-3" /> 100% Private — Files never leave your device
